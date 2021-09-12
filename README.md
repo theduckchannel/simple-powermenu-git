@@ -1,13 +1,12 @@
 # Simple Powermenu
 
-## Screenshot
-
-![simple-powermenu Screenshot](/screenshots/simple-powermenu-screenshot.png)
-
-
 ## Description
 
 A simple powermenu for WM users like bspwm, i3 and QTile. 
+
+## Screenshot
+
+![simple-powermenu Screenshot](/screenshots/simple-powermenu-screenshot.png)
 
 ## Instalation
 
