@@ -100,13 +100,13 @@ class mainWindow(QMainWindow):
         iconDefaultSize = QSize(96, 96)
         #####
         # Shutdown button
-        self.preparelabel('./images/shutdown.png', self.shutdownLabel, horizontalLayout)
+        self.preparelabel('/usr/share/simple-powermenu/images/shutdown.png', self.shutdownLabel, horizontalLayout)
         ###
         # Reboot button
-        self.preparelabel('./images/reboot.png', self.rebootLabel, horizontalLayout)
+        self.preparelabel('/usr/share/simple-powermenu/images/reboot.png', self.rebootLabel, horizontalLayout)
         ###
         # Screenlock button
-        self.preparelabel('./images/lock.png', self.screenlockLabel, horizontalLayout)
+        self.preparelabel('/usr/share/simple-powermenu/images/lock.png', self.screenlockLabel, horizontalLayout)
         #####
         # Set the central widget of the Window.
         centralWidget = QWidget()
