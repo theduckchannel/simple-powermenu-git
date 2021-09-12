@@ -14,7 +14,7 @@ from pynput import keyboard
 # python-qdarkstyle python-pyqt5 python-pyinput i3lock-color
 
 # Current version
-current_version='0.1.3'
+current_version='0.1.4'
 
 
 class QLabelClickable(QLabel):
