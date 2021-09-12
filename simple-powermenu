@@ -208,11 +208,12 @@ class mainWindow(QMainWindow):
     @staticmethod
     def reboot():
         print('Reboot')
-        sp.getoutput('/usr/bin/simple-screenlock')
+        sp.getoutput('reboot')
 
     @staticmethod
     def screenlock():
         print('screenlock')
+        sp.getoutput('/usr/bin/simple-screenlock')
 
     def exitApp(self):
         self.app.quit()
