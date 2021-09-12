@@ -2,7 +2,7 @@
 
 ## Screenshot
 
-![simple-powermenu Screenshot](/images/simple-powermenu-icon.png)
+![simple-powermenu Screenshot](/screenshots/simple-powermenu-screenshot.png)
 
 
 ## Description
