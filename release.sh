@@ -8,7 +8,7 @@ echo "Old Version ====> $OLDVERSION"
 #####
 # New Version Dialog
 read -p "Enter with new version: " NEWVERSION
-# sed -i "s/^pkgver=.*/pkgver=$NEWVERSION/" ../"$PKGNAME"-AUR/PKGBUILD
+sed -i "s/^pkgver=.*/pkgver=$NEWVERSION/" ../"$PKGNAME"-AUR/PKGBUILD
 sed -i "s/^current_version.*/current_version='$NEWVERSION'/" $BINARY
 #####
 echo "Preparing to release $NEWVERSION on AUR...."
