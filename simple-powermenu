@@ -1,0 +1,195 @@
+#!/usr/bin/env -S python
+import os
+import sys
+import subprocess as sp
+
+from ansible.parsing.utils.addresses import label
+from qtpy.QtGui import *
+from qtpy.QtWidgets import *
+from qtpy.QtCore import *
+import qdarkstyle
+from pynput import keyboard
+
+# Depends
+# python-qdarkstyle python-pyqt5
+
+# Current version
+current_version = '0.1.0'
+
+
+# Listen for keyboard events
+class keyboardWatch(QObject):
+    signal = Signal(str, name='keyPressed')
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        listener = keyboard.Listener(on_press=self.on_press)
+        listener.start()
+
+    def on_press(self, key):
+        self.signal.emit(str(key))
+
+
+class Version:
+
+    @staticmethod
+    def getAppName():
+        return 'Duckchannel Powermenu'
+
+    @staticmethod
+    def getVersion():
+        return current_version
+
+
+class mainWindow(QMainWindow):
+    app = QApplication(sys.argv)
+    shutdownLabel = QLabel()
+    rebootLabel = QLabel()
+    screenlockLabel = QLabel()
+    currentButtonIndex = 0
+    buttons = [
+        shutdownLabel,
+        rebootLabel,
+        screenlockLabel
+    ]
+
+    defaultStyleSheet = """
+    QPushButton { background: transparent; }
+    """
+    # keyboardthread
+    kbdWatch = keyboardWatch()
+
+    def __init__(self):
+        super().__init__(parent=None)
+        self.setWindowTitle(f'Xerolinux Rollback Utility v. {Version.getVersion()}')
+        # self.setFixedSize(QSize(640, 480))
+        ############
+        # Hide Title Bar
+        self.setWindowFlag(Qt.FramelessWindowHint)
+        ###################################################
+        # Horizontal Default Layout ###
+        horizontalLayout = QHBoxLayout()
+        horizontalLayout.setAlignment(Qt.AlignTop)
+        ###
+        # Default Sizes and Styles
+        iconDefaultSize = QSize(96, 96)
+        #####
+        # Shutdown button
+        self.preparelabel('./images/shutdown.png', self.shutdownLabel, horizontalLayout)
+        ###
+        # Reboot button
+        self.preparelabel('./images/reboot.png', self.rebootLabel, horizontalLayout)
+        ###
+        # Screenlock button
+        self.preparelabel('./images/lock.png', self.screenlockLabel, horizontalLayout)
+        #####
+        # Set the central widget of the Window.
+        centralWidget = QWidget()
+        centralWidget.setLayout(horizontalLayout)
+        self.setCentralWidget(centralWidget)
+        ####
+        # Connecting signals
+        self.kbdWatch.signal.connect(self.keyPressed)
+        ####
+        # Connecting events
+        self.shutdownLabel.enterEvent = self.shutdownMouseEnter
+        self.rebootLabel.enterEvent = self.rebootMouseEnter
+        self.screenlockLabel.enterEvent = self.screenlockMouseEnter
+
+        # Hover the First button index
+        self.hoverButton()
+        ############
+        # setup stylesheet
+        # the default system in qdarkstyle uses qtpy environment variable
+        self.app.setStyleSheet(qdarkstyle.load_stylesheet())
+        self.show()
+        ###
+        sys.exit(self.app.exec())
+
+    def shutdownMouseEnter(self, event):
+        self.currentButtonIndex = 0
+        self.updateButtons()
+
+    def rebootMouseEnter(self, event):
+        self.currentButtonIndex = 1
+        self.updateButtons()
+
+    def screenlockMouseEnter(self, event):
+        self.currentButtonIndex = 2
+        self.updateButtons()
+
+    @staticmethod
+    def preparelabel(imageStr, qlabel, qhlayout):
+        tempPixmap = QPixmap(imageStr)
+        qlabel.setPixmap(tempPixmap.scaled(96, 96, Qt.KeepAspectRatio))
+        qlabel.setFixedSize(QSize(110, 110))
+        qlabel.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        qhlayout.addWidget(qlabel)
+
+    def keyPressed(self, keyCode):
+        if keyCode == 'Key.esc':
+            self.exitApp()
+        elif keyCode == 'Key.enter':
+            if self.currentButtonIndex == 0:
+                self.shutdown()
+            elif self.currentButtonIndex == 1:
+                self.reboot()
+            else:
+                self.screenlock()
+        elif keyCode == 'Key.tab':
+            if self.currentButtonIndex == 2:
+                self.currentButtonIndex = 0
+            else:
+                self.currentButtonIndex += 1
+
+            self.updateButtons()
+        elif keyCode == 'Key.right':
+            if self.currentButtonIndex == 2:
+                self.currentButtonIndex = 0
+            else:
+                self.currentButtonIndex += 1
+
+            self.updateButtons()
+        elif keyCode == 'Key.left':
+            if self.currentButtonIndex == 0:
+                self.currentButtonIndex = 2
+            else:
+                self.currentButtonIndex -= 1
+
+            self.updateButtons()
+
+    def hoverButton(self):
+        currentStyleSheet = """
+            border-radius: 5px;
+            border: 2px solid #00d7f0;            
+        """
+        self.buttons[self.currentButtonIndex].setFocus()
+        self.buttons[self.currentButtonIndex].setStyleSheet(currentStyleSheet)
+
+    def updateButtons(self):
+        for button in self.buttons:
+            button.setStyleSheet(self.defaultStyleSheet)
+
+        self.hoverButton()
+
+    @staticmethod
+    def shutdown():
+        print('shutdown')
+
+    @staticmethod
+    def reboot():
+        print('Reboot')
+
+    @staticmethod
+    def screenlock():
+        print('screenlock')
+
+    def exitApp(self):
+        self.app.quit()
+        sys.exit(0)
+
+
+if __name__ == '__main__':
+    os.environ['QT_LOGGING_RULES'] = "qt5ct.debug=false"
+    os.environ['QT_API'] = 'pyqt5'
+    window = mainWindow()
