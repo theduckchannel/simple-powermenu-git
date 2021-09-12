@@ -1,4 +1,4 @@
-# The Duck Channel Powermenu
+# Simple Powermenu
 
 ## Screenshot
 

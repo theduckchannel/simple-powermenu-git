@@ -11,10 +11,35 @@ import qdarkstyle
 from pynput import keyboard
 
 # Depends
-# python-qdarkstyle python-pyqt5
+# python-qdarkstyle python-pyqt5 python-pyinput i3lock-color
 
 # Current version
 current_version = '0.1.0'
+
+
+class QLabelClickable(QLabel):
+    clicked = Signal(str)
+
+    def __init__(self, parent=None):
+        super(QLabelClickable, self).__init__(parent)
+
+    def mousePressEvent(self, event):
+        self.ultimo = "Clic"
+
+    def mouseReleaseEvent(self, event):
+        if self.ultimo == "Clic":
+            QTimer.singleShot(QApplication.instance().doubleClickInterval(),
+                              self.performSingleClickAction)
+        else:
+            # Realizar acción de doble clic.
+            self.clicked.emit(self.ultimo)
+
+    def mouseDoubleClickEvent(self, event):
+        self.ultimo = "Doble Clic"
+
+    def performSingleClickAction(self):
+        if self.ultimo == "Clic":
+            self.clicked.emit(self.ultimo)
 
 
 # Listen for keyboard events
@@ -43,9 +68,9 @@ class Version:
 
 class mainWindow(QMainWindow):
     app = QApplication(sys.argv)
-    shutdownLabel = QLabel()
-    rebootLabel = QLabel()
-    screenlockLabel = QLabel()
+    shutdownLabel = QLabelClickable()
+    rebootLabel = QLabelClickable()
+    screenlockLabel = QLabelClickable()
     currentButtonIndex = 0
     buttons = [
         shutdownLabel,
@@ -93,8 +118,11 @@ class mainWindow(QMainWindow):
         ####
         # Connecting events
         self.shutdownLabel.enterEvent = self.shutdownMouseEnter
+        self.shutdownLabel.clicked.connect(self.shutdown)
         self.rebootLabel.enterEvent = self.rebootMouseEnter
+        self.rebootLabel.clicked.connect(self.reboot)
         self.screenlockLabel.enterEvent = self.screenlockMouseEnter
+        self.screenlockLabel.clicked.connect(self.screenlock)
 
         # Hover the First button index
         self.hoverButton()
@@ -175,10 +203,12 @@ class mainWindow(QMainWindow):
     @staticmethod
     def shutdown():
         print('shutdown')
+        sp.getoutput('poweroff')
 
     @staticmethod
     def reboot():
         print('Reboot')
+        sp.getoutput('/usr/bin/simple-screenlock')
 
     @staticmethod
     def screenlock():

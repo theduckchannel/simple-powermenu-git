@@ -1,7 +1,7 @@
 #!/bin/bash
 
-PKGNAME="xerolinux-rollback-git"
-BINARY="xerolinux-rollback"
+PKGNAME="simple-powermenu-git"
+BINARY="simple-powermenu"
 CURRENT_DIR=$(pwd)
 OLDVERSION=$(grep '^current_version.*' $BINARY)
 echo "Old Version ====> $OLDVERSION"
@@ -9,7 +9,7 @@ echo "Old Version ====> $OLDVERSION"
 # New Version Dialog
 read -p "Enter with new version: " NEWVERSION
 sed -i "s/^pkgver=.*/pkgver=$NEWVERSION/" ../"$PKGNAME"-AUR/PKGBUILD
-sed -i "s/^current_version.*/current_version='$NEWVERSION'/" duckchannel-powermenu
+sed -i "s/^current_version.*/current_version='$NEWVERSION'/" $BINARY
 #####
 echo "Preparing to release $NEWVERSION on AUR...."
 cd ../"$PKGNAME"-AUR
